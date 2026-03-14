@@ -1,12 +1,10 @@
 install_packages() {
   local official_pkgs=(
-    base-devel git openssh sudo less inetutils whois
+    base-devel git sudo less inetutils whois
     starship fzf eza zoxide tmux btop jq gum man-db tldr
     vim neovim luarocks
     clang llvm rust mise libyaml
-    github-cli lazygit lazydocker opencode
-    docker docker-buildx docker-compose
-    tailscale
+    github-cli lazygit opencode
     kitty-terminfo
   )
 
@@ -14,8 +12,12 @@ install_packages() {
     claude-code
   )
 
+  if [ "$IN_CONTAINER" -eq 0 ]; then
+    official_pkgs+=(openssh lazydocker docker docker-buildx docker-compose tailscale)
+  fi
+
   section "Installing Arch packages..."
-  sudo pacman -Syu --needed --noconfirm "${official_pkgs[@]}"
+  run_as_root pacman -Syu --needed --noconfirm "${official_pkgs[@]}"
 
   if ! command -v yay &>/dev/null; then
     section "Installing yay..."
@@ -34,12 +36,17 @@ install_npm_tools() {
 }
 
 enable_services() {
+  if [ "$IN_CONTAINER" -eq 1 ]; then
+    section "Skipping services in container..."
+    return
+  fi
+
   section "Enabling services..."
 
-  sudo systemctl enable docker.service
-  sudo systemctl start --no-block docker.service
+  run_as_root systemctl enable docker.service
+  run_as_root systemctl start --no-block docker.service
   echo "✓ Docker"
 
-  sudo systemctl enable --now sshd.service
+  run_as_root systemctl enable --now sshd.service
   echo "✓ sshd"
 }
