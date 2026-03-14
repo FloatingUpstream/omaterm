@@ -1,6 +1,6 @@
--- Read theme from ~/.config/omaterm/nvim.theme, default to "default" (terminal ANSI colors)
+-- Read theme from ~/.config/omaterm/nvim.theme, default to "nord"
 local theme_file = vim.fn.expand("~/.config/omaterm/nvim.theme")
-local theme = "tokyonight"
+local theme = "nord"
 
 local ok, lines = pcall(vim.fn.readfile, theme_file)
 if ok and #lines > 0 and lines[1]:match("%S") then

@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: omaterm-container [--update] [container.sh options]
+
+Launch the managed local Omaterm container checkout.
+
+Defaults:
+  - checkout dir: ~/.local/share/omaterm
+  - profile: toolchain
+
+Options:
+  --update    Update the managed checkout before running
+  --help      Show this help
+
+Environment:
+  OMATERM_REPO           Repo used for the managed checkout
+  OMATERM_REF            Branch or ref used for the managed checkout
+  OMATERM_CHECKOUT_DIR   Managed checkout location
+
+All other arguments are passed through to container.sh.
+EOF
+}
+
+require_command() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "Missing required command: $1" >&2
+    exit 1
+  fi
+}
+
+has_profile_arg() {
+  local arg
+
+  for arg in "$@"; do
+    case "$arg" in
+      --profile|--profile=*)
+        return 0
+        ;;
+    esac
+  done
+
+  return 1
+}
+
+ensure_checkout() {
+  local checkout_dir="$1"
+  local repo="$2"
+  local ref="$3"
+  local update="$4"
+
+  if [ ! -d "$checkout_dir/.git" ]; then
+    mkdir -p "$(dirname "$checkout_dir")"
+    echo "==> Cloning managed Omaterm checkout into ${checkout_dir}"
+    git clone --branch "$ref" --single-branch "$repo" "$checkout_dir"
+    return
+  fi
+
+  if [ "$update" -eq 1 ]; then
+    echo "==> Updating managed Omaterm checkout in ${checkout_dir}"
+    git -C "$checkout_dir" remote set-url origin "$repo"
+    git -C "$checkout_dir" fetch origin "$ref"
+    git -C "$checkout_dir" checkout "$ref"
+    git -C "$checkout_dir" pull --ff-only origin "$ref"
+  fi
+}
+
+require_command git
+
+OMATERM_REPO="${OMATERM_REPO:-https://github.com/FloatingUpstream/omaterm.git}"
+OMATERM_REF="${OMATERM_REF:-feature/devcontainer-support}"
+OMATERM_CHECKOUT_DIR="${OMATERM_CHECKOUT_DIR:-$HOME/.local/share/omaterm}"
+UPDATE_CHECKOUT=0
+forwarded_args=()
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --update)
+      UPDATE_CHECKOUT=1
+      shift
+      ;;
+    --help)
+      usage
+      exit 0
+      ;;
+    *)
+      forwarded_args+=("$1")
+      shift
+      ;;
+  esac
+done
+
+ensure_checkout "$OMATERM_CHECKOUT_DIR" "$OMATERM_REPO" "$OMATERM_REF" "$UPDATE_CHECKOUT"
+
+if [ ! -x "$OMATERM_CHECKOUT_DIR/container.sh" ]; then
+  chmod +x "$OMATERM_CHECKOUT_DIR/container.sh"
+fi
+
+if ! has_profile_arg "${forwarded_args[@]}"; then
+  forwarded_args=(--profile toolchain "${forwarded_args[@]}")
+fi
+
+exec env OMATERM_SOURCE=local "$OMATERM_CHECKOUT_DIR/container.sh" "${forwarded_args[@]}"

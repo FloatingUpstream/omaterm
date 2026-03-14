@@ -23,7 +23,7 @@ THEMES=(
 )
 
 THEME_FILE="$HOME/.config/omaterm/nvim.theme"
-CURRENT=$(cat "$THEME_FILE" 2>/dev/null || echo "default")
+CURRENT=$(cat "$THEME_FILE" 2>/dev/null || echo "nord")
 
 theme=$(gum choose --header "Neovim theme (current: $CURRENT)" "${THEMES[@]}")
 

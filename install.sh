@@ -167,10 +167,16 @@ install_bins() {
 
   if [ "$IN_CONTAINER" -eq 0 ]; then
     cp -Rf "$INSTALLER_DIR/bin/omaterm-ssh" "$HOME/.local/bin/"
+    mkdir -p "$HOME/bin"
+    cp -Rf "$INSTALLER_DIR/bin/omaterm-container" "$HOME/bin/"
     echo "✓ omaterm-ssh"
+    echo "✓ omaterm-container"
   fi
 
   chmod +x "$HOME/.local/bin/"*
+  if [ -f "$HOME/bin/omaterm-container" ]; then
+    chmod +x "$HOME/bin/omaterm-container"
+  fi
   echo "✓ omaterm-theme"
   echo "✓ omaterm-refresh"
 }

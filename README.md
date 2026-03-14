@@ -47,6 +47,20 @@ Use Ubuntu instead:
 curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/feature/devcontainer-support/container.sh | bash -s -- --base ubuntu
 ```
 
+For a reusable local shortcut, install `~/bin/omaterm-container`. It keeps a
+managed checkout in `~/.local/share/omaterm` and defaults to the `toolchain`
+profile:
+
+```bash
+omaterm-container
+```
+
+Update the managed checkout first:
+
+```bash
+omaterm-container --update
+```
+
 - Uses the top-level `Dockerfile`
 - Defaults to Arch (`archlinux:latest`)
 - Defaults to the lighter `default` package profile
@@ -56,6 +70,7 @@ curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/feature/de
 - Builds the image with your current host UID/GID for better file ownership
 - Reuses a named Docker container per workspace so tmux sessions survive detaching and rerunning `./container.sh`
 - Use `./container.sh --reset` to rebuild and recreate the container cleanly
+- `omaterm-container` stores its managed checkout in `~/.local/share/omaterm`
 
 ## Interactive prompts
 
