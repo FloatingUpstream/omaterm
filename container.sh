@@ -17,7 +17,7 @@ Options:
 
 Environment:
   OMATERM_REPO             Git URL used to download the repo tarball
-  OMATERM_REF              Branch name to download (default: master)
+  OMATERM_REF              Branch name to download (default: feature/devcontainer-support)
   OMATERM_BASE             Same as --base
   OMATERM_BASE_IMAGE       Same as --base-image
   OMATERM_IMAGE            Same as --tag
@@ -62,7 +62,7 @@ IMAGE_TAG="${OMATERM_IMAGE:-}"
 WORKSPACE="${OMATERM_WORKSPACE:-$PWD}"
 BUILD_ONLY=0
 OMATERM_REPO="${OMATERM_REPO:-https://github.com/FloatingUpstream/omaterm.git}"
-OMATERM_REF="${OMATERM_REF:-master}"
+OMATERM_REF="${OMATERM_REF:-feature/devcontainer-support}"
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
