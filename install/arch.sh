@@ -1,25 +1,26 @@
 install_packages() {
   local official_pkgs=(
-    base-devel git sudo less inetutils whois
-    starship fzf eza zoxide tmux btop jq gum man-db tldr
+    git sudo less inetutils whois
+    starship fzf eza zoxide tmux jq gum man-db tldr
     vim neovim luarocks
-    clang llvm rust mise libyaml
+    mise libyaml
     github-cli lazygit opencode
     kitty-terminfo
   )
 
-  local aur_pkgs=(
-    claude-code
-  )
+  local aur_pkgs=()
 
   if [ "$IN_CONTAINER" -eq 0 ]; then
-    official_pkgs+=(openssh lazydocker docker docker-buildx docker-compose tailscale)
+    official_pkgs+=(btop base-devel clang llvm rust openssh lazydocker docker docker-buildx docker-compose tailscale)
+    aur_pkgs+=(claude-code)
+  elif [ "$OMATERM_PROFILE" = "toolchain" ] || [ "$OMATERM_PROFILE" = "full" ]; then
+    official_pkgs+=(base-devel clang llvm rust)
   fi
 
   section "Installing Arch packages..."
   run_as_root pacman -Syu --needed --noconfirm "${official_pkgs[@]}"
 
-  if ! command -v yay &>/dev/null; then
+  if [ "${#aur_pkgs[@]}" -gt 0 ] && ! command -v yay &>/dev/null; then
     section "Installing yay..."
     local tmpdir=$(mktemp -d)
     git clone https://aur.archlinux.org/yay-bin.git "$tmpdir/yay"
@@ -27,8 +28,10 @@ install_packages() {
     rm -rf "$tmpdir"
   fi
 
-  section "Installing AUR packages..."
-  yay -S --needed --noconfirm "${aur_pkgs[@]}"
+  if [ "${#aur_pkgs[@]}" -gt 0 ]; then
+    section "Installing AUR packages..."
+    yay -S --needed --noconfirm "${aur_pkgs[@]}"
+  fi
 }
 
 install_npm_tools() {

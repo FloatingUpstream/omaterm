@@ -4,6 +4,7 @@ FROM ${BASE_IMAGE}
 ARG USERNAME=omaterm
 ARG USER_UID=1000
 ARG USER_GID=1000
+ARG OMATERM_PROFILE=default
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL=/bin/bash
@@ -42,7 +43,7 @@ COPY --chown=${USER_UID}:${USER_GID} . /tmp/omaterm
 USER ${USERNAME}
 WORKDIR /tmp/omaterm
 
-RUN OMATERM_CONTAINER=1 OMATERM_NONINTERACTIVE=1 ./install.sh && rm -rf /tmp/omaterm
+RUN OMATERM_CONTAINER=1 OMATERM_NONINTERACTIVE=1 OMATERM_PROFILE=${OMATERM_PROFILE} ./install.sh && rm -rf /tmp/omaterm
 
 WORKDIR /workspace
 CMD ["/bin/bash", "-l"]

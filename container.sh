@@ -9,6 +9,8 @@ Build and run an Omaterm container locally.
 
 Options:
   --base <arch|ubuntu>     Base distro to use (default: arch)
+  --profile <default|toolchain>
+                           Package profile to install (default: default)
   --base-image <image>     Explicit Docker base image override
   --tag <name>             Docker image tag override
   --workspace <path>       Host path to mount at /workspace (default: current dir)
@@ -19,6 +21,7 @@ Environment:
   OMATERM_REPO             Git URL used to download the repo tarball
   OMATERM_REF              Branch name to download (default: feature/devcontainer-support)
   OMATERM_BASE             Same as --base
+  OMATERM_PROFILE          Same as --profile
   OMATERM_BASE_IMAGE       Same as --base-image
   OMATERM_IMAGE            Same as --tag
   OMATERM_WORKSPACE        Same as --workspace
@@ -57,6 +60,7 @@ base_image_for() {
 }
 
 BASE="${OMATERM_BASE:-arch}"
+PROFILE="${OMATERM_PROFILE:-default}"
 BASE_IMAGE="${OMATERM_BASE_IMAGE:-}"
 IMAGE_TAG="${OMATERM_IMAGE:-}"
 WORKSPACE="${OMATERM_WORKSPACE:-$PWD}"
@@ -72,6 +76,10 @@ while [ "$#" -gt 0 ]; do
       ;;
     --base-image)
       BASE_IMAGE="$2"
+      shift 2
+      ;;
+    --profile)
+      PROFILE="$2"
       shift 2
       ;;
     --tag)
@@ -129,6 +137,7 @@ docker build \
   --build-arg BASE_IMAGE="$BASE_IMAGE" \
   --build-arg USER_UID="$(id -u)" \
   --build-arg USER_GID="$(id -g)" \
+  --build-arg OMATERM_PROFILE="$PROFILE" \
   --tag "$IMAGE_TAG" \
   "$TMPDIR"
 
@@ -138,7 +147,16 @@ if [ "$BUILD_ONLY" -eq 1 ]; then
 fi
 
 echo "==> Starting ${IMAGE_TAG}"
-docker run --rm -it \
+if [ ! -t 0 ] && [ -r /dev/tty ]; then
+  exec </dev/tty 2>/dev/null || true
+fi
+
+docker_flags=(--rm)
+if [ -t 0 ] && [ -t 1 ]; then
+  docker_flags+=(-it)
+fi
+
+docker run "${docker_flags[@]}" \
   -e TERM="${TERM:-xterm-256color}" \
   -v "${WORKSPACE}:/workspace" \
   -w /workspace \

@@ -47,6 +47,24 @@ if is_truthy "${OMATERM_NONINTERACTIVE:-}" || [ ! -t 0 ]; then
   NONINTERACTIVE=1
 fi
 
+OMATERM_PROFILE="${OMATERM_PROFILE:-}"
+if [ -z "$OMATERM_PROFILE" ]; then
+  if [ "$IN_CONTAINER" -eq 1 ]; then
+    OMATERM_PROFILE=default
+  else
+    OMATERM_PROFILE=full
+  fi
+fi
+
+case "$OMATERM_PROFILE" in
+  default|toolchain|full)
+    ;;
+  *)
+    echo "Unsupported OMATERM_PROFILE: $OMATERM_PROFILE" >&2
+    exit 1
+    ;;
+esac
+
 # Common functions for Omaterm installation
 show_banner() {
   clear 2>/dev/null || true

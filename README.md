@@ -35,10 +35,10 @@ Build and launch a local Omaterm container from this fork:
 curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/feature/devcontainer-support/container.sh | bash
 ```
 
-Use arch explicitly:
+Use the heavier toolchain profile:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/feature/devcontainer-support/container.sh | bash -s -- --base arch
+curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/feature/devcontainer-support/container.sh | bash -s -- --profile toolchain
 ```
 
 Use Ubuntu instead:
@@ -49,7 +49,9 @@ curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/feature/de
 
 - Uses the top-level `Dockerfile`
 - Defaults to Arch (`archlinux:latest`)
+- Defaults to the lighter `default` package profile
 - Supports Ubuntu (`ubuntu:24.04`) and Arch (`archlinux:latest`) base images
+- `toolchain` adds compiler/build packages that are excluded from the default profile
 - Mounts the current host directory into `/workspace`
 - Builds the image with your current host UID/GID for better file ownership
 

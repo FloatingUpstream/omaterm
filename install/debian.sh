@@ -4,16 +4,18 @@ install_packages() {
   run_as_root apt-get upgrade -y
 
   local packages=(
-    build-essential git libssl-dev sudo less net-tools whois
-    fzf eza zoxide tmux btop jq man-db
+    git sudo less net-tools whois
+    fzf eza zoxide tmux jq man-db
     vim neovim luarocks
-    clang llvm rustc libyaml-0-2
+    libyaml-0-2
     curl wget gpg
     kitty-terminfo
   )
 
   if [ "$IN_CONTAINER" -eq 0 ]; then
-    packages+=(openssh-server docker.io docker-buildx docker-compose)
+    packages+=(build-essential libssl-dev btop clang llvm rustc openssh-server docker.io docker-buildx docker-compose)
+  elif [ "$OMATERM_PROFILE" = "toolchain" ] || [ "$OMATERM_PROFILE" = "full" ]; then
+    packages+=(build-essential libssl-dev clang llvm rustc)
   fi
 
   section "Installing Debian packages..."
@@ -92,7 +94,7 @@ install_npm_tools() {
   if ! command -v opencode &>/dev/null; then
     npm install -g opencode-ai
   fi
-  if ! command -v claude-code &>/dev/null; then
+  if [ "$IN_CONTAINER" -eq 0 ] && ! command -v claude-code &>/dev/null; then
     npm install -g @anthropic-ai/claude-code
   fi
 }
