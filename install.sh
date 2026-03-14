@@ -136,13 +136,23 @@ install_configs() {
   section "Installing configs..."
   mkdir -p "$HOME/.config"
   cp -Rf "$INSTALLER_DIR/config/"* "$HOME/.config/"
+
+  if [ "$IN_CONTAINER" -eq 1 ] && ! grep -q 'Omaterm container shell defaults' "$HOME/.config/tmux/tmux.conf" 2>/dev/null; then
+    cat >>"$HOME/.config/tmux/tmux.conf" <<'EOF'
+
+# Omaterm container shell defaults
+set -g default-shell /bin/bash
+set -g default-command "/bin/bash -l"
+EOF
+  fi
+
   echo "✓ Neovim"
   echo "✓ Starship"
 
   if ! grep -q "if \[\[ \$- == \*i\* && -z \$TMUX \]\]" "$HOME/.bashrc" 2>/dev/null; then
     cat >>"$HOME/.bashrc" <<'EOF'
 if [[ $- == *i* && -z $TMUX ]]; then
-  t
+  tmux attach -t Work || tmux new-session -s Work /bin/bash -l
 fi
 EOF
     echo "✓ Tmux auto-start"
@@ -152,9 +162,15 @@ EOF
 install_bins() {
   section "Installing bins..."
   mkdir -p "$HOME/.local/bin"
-  cp -Rf "$INSTALLER_DIR/bin/"* "$HOME/.local/bin/"
+  cp -Rf "$INSTALLER_DIR/bin/omaterm-refresh" "$HOME/.local/bin/"
+  cp -Rf "$INSTALLER_DIR/bin/omaterm-theme" "$HOME/.local/bin/"
+
+  if [ "$IN_CONTAINER" -eq 0 ]; then
+    cp -Rf "$INSTALLER_DIR/bin/omaterm-ssh" "$HOME/.local/bin/"
+    echo "✓ omaterm-ssh"
+  fi
+
   chmod +x "$HOME/.local/bin/"*
-  echo "✓ omaterm-ssh"
   echo "✓ omaterm-theme"
   echo "✓ omaterm-refresh"
 }

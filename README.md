@@ -54,6 +54,8 @@ curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/feature/de
 - `toolchain` adds compiler/build packages that are excluded from the default profile
 - Mounts the current host directory into `/workspace`
 - Builds the image with your current host UID/GID for better file ownership
+- Reuses a named Docker container per workspace so tmux sessions survive detaching and rerunning `./container.sh`
+- Use `./container.sh --reset` to rebuild and recreate the container cleanly
 
 ## Interactive prompts
 
