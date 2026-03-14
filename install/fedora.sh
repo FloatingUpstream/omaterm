@@ -3,7 +3,7 @@ install_packages() {
   run_as_root dnf upgrade -y
 
   local packages=(
-    git sudo less net-tools whois
+    git sudo less net-tools whois bash-completion
     fzf zoxide tmux jq man-db tldr
     vim neovim luarocks
     libyaml

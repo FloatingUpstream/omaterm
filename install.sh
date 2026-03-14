@@ -117,7 +117,12 @@ EOF
       echo "✓ Zsh"
       ;;
     *)
-      printf 'source ~/.config/shell/all\n' >"$HOME/.bashrc"
+      cat >"$HOME/.bashrc" <<'EOF'
+if [[ -f /usr/share/bash-completion/bash_completion ]]; then
+  source /usr/share/bash-completion/bash_completion
+fi
+source ~/.config/shell/all
+EOF
       printf '. ~/.bashrc\n' >"$HOME/.bash_profile"
       ln -snf "$HOME/.config/shell/inputrc" "$HOME/.inputrc"
       echo "✓ Bash"
@@ -134,9 +139,9 @@ install_configs() {
   echo "✓ Neovim"
   echo "✓ Starship"
 
-  if ! grep -q "if \[\[ -z \$TMUX \]\]" "$HOME/.bashrc" 2>/dev/null; then
+  if ! grep -q "if \[\[ \$- == \*i\* && -z \$TMUX \]\]" "$HOME/.bashrc" 2>/dev/null; then
     cat >>"$HOME/.bashrc" <<'EOF'
-if [[ -z $TMUX ]]; then
+if [[ $- == *i* && -z $TMUX ]]; then
   t
 fi
 EOF

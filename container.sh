@@ -147,8 +147,12 @@ if [ "$BUILD_ONLY" -eq 1 ]; then
 fi
 
 echo "==> Starting ${IMAGE_TAG}"
-if [ ! -t 0 ] && [ -r /dev/tty ]; then
-  exec </dev/tty 2>/dev/null || true
+echo "   Attaching to tmux inside the container"
+echo "   Prefix: Ctrl-Space (Ctrl-b also works)"
+echo "   Detach: Ctrl-b d"
+
+if [ -r /dev/tty ] && [ -w /dev/tty ]; then
+  exec </dev/tty >/dev/tty 2>/dev/tty || true
 fi
 
 docker_flags=(--rm)
@@ -156,7 +160,7 @@ if [ -t 0 ] && [ -t 1 ]; then
   docker_flags+=(-it)
 fi
 
-docker run "${docker_flags[@]}" \
+exec docker run "${docker_flags[@]}" \
   -e TERM="${TERM:-xterm-256color}" \
   -v "${WORKSPACE}:/workspace" \
   -w /workspace \

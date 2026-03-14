@@ -1,6 +1,6 @@
 install_packages() {
   local official_pkgs=(
-    git sudo less inetutils whois
+    git sudo less inetutils whois bash-completion
     starship fzf eza zoxide tmux jq gum man-db tldr
     vim neovim luarocks
     mise libyaml

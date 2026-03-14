@@ -4,7 +4,7 @@ install_packages() {
   run_as_root apt-get upgrade -y
 
   local packages=(
-    git sudo less net-tools whois
+    git sudo less net-tools whois bash-completion
     fzf eza zoxide tmux jq man-db
     vim neovim luarocks
     libyaml-0-2
