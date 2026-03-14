@@ -32,19 +32,19 @@ serial console setup.
 Build and launch a local Omaterm container from this fork:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/master/container.sh | bash
+curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/feature/devcontainer-support/container.sh | bash
 ```
 
-Use Arch instead of Ubuntu:
+Use arch explicitly:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/master/container.sh | bash -s -- --base arch
+curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/feature/devcontainer-support/container.sh | bash -s -- --base arch
 ```
 
 Use Ubuntu instead:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/master/container.sh | bash -s -- --base ubuntu
+curl -fsSL https://raw.githubusercontent.com/FloatingUpstream/omaterm/feature/devcontainer-support/container.sh | bash -s -- --base ubuntu
 ```
 
 - Uses the top-level `Dockerfile`
